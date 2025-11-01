@@ -1,62 +1,400 @@
-Prompt for AI generator / web-builder:
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE LABEL TRAP - Health Cards</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-Create an interactive card deck titled “THE LABEL TRAP.”
-Use the same design foundation as the previous decks:
+        body {
+            background-color: #0B0016;
+            font-family: 'Poppins', sans-serif;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
 
-Deep purple-black background (#0B0016)
+        .deck-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            background: linear-gradient(90deg, #FF00CC, #00FFFF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(255, 0, 204, 0.5);
+        }
 
-Neon pink-cyan gradient borders
+        .cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            max-width: 400px;
+            width: 100%;
+            margin-bottom: 60px;
+        }
 
-Orbitron/Rajdhani for headings, Poppins for body text
+        .card-wrapper {
+            width: 400px;
+            height: 260px;
+            perspective: 1000px;
+            position: relative;
+        }
 
-Two-sided 3D flip cards (Y-axis rotation, 600 ms)
+        .card {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
 
-Each card has a front (question) and back (answer + fact)
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
 
-Include a subtle glowing “Label Padega India” banner at the bottom encouraging users to read labels before buying.
+        .card-face {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(11, 0, 22, 0.9), rgba(30, 0, 50, 0.9));
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
 
-No emojis, icons, or illustrations—pure text + minimalist vector accents only.
+        .card-face::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 10px;
+            padding: 2px;
+            background: linear-gradient(135deg, #FF00CC, #00FFFF);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            z-index: -1;
+        }
 
-Maintain consistent spacing and vertical scroll.
+        .card:hover .card-face::before {
+            animation: pulse 2s infinite;
+        }
 
-CARD 1
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 5px rgba(255, 0, 204, 0.5), 0 0 10px rgba(0, 255, 255, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 15px rgba(255, 0, 204, 0.8), 0 0 25px rgba(0, 255, 255, 0.8);
+            }
+            100% {
+                box-shadow: 0 0 5px rgba(255, 0, 204, 0.5), 0 0 10px rgba(0, 255, 255, 0.5);
+            }
+        }
 
-Front Question:
-“How much spinach do you think is actually in a pack of ‘Spinach Noodles’?”
+        .card-front {
+            z-index: 2;
+        }
 
-Back Answer:
-“Less than 1.5 percent. Most of the color comes from synthetic or dehydrated extract, not real spinach.”
+        .card-back {
+            transform: rotateY(180deg);
+        }
 
-Micro Fact:
-“Marketing uses the green label trick—tiny ingredient, big claim.”
+        .card-content {
+            text-align: center;
+            width: 100%;
+        }
 
-CARD 2
+        .question {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
 
-Front Question:
-“Do you think your favorite tomato ketchup is packed with real tomatoes?”
+        .answer {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
 
-Back Answer:
-“Barely. Many commercial ketchups use under 25 percent tomato paste plus sugar, starch, and preservatives.”
+        .explanation {
+            font-size: 0.9rem;
+            font-weight: 300;
+            opacity: 0.8;
+            font-style: italic;
+        }
 
-Micro Fact:
-“That thick texture? It’s often corn syrup, not tomato pulp.”
+        .select-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+        }
 
-CARD 3
+        .select-button:hover {
+            border-color: #00FFFF;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
 
-Front Question:
-“If real fruit juice needs double the fruit to make one glass, how are ‘100% Real Juices’ sold cheaper than fruit?”
+        .select-button.selected {
+            background-color: #00FFFF;
+            border-color: #00FFFF;
+        }
 
-Back Answer:
-“They’re mostly reconstituted from fruit concentrate, sugar, and flavoring—not fresh fruit.”
+        .select-button.selected::after {
+            content: '✓';
+            color: #0B0016;
+            font-weight: bold;
+        }
 
-Micro Fact:
-“Concentrates travel cheap. Real fruit doesn’t.”
+        .next-button {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #FF00CC, #00FFFF);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
 
-END-SECTION BANNER
+        .card.flipped .next-button {
+            opacity: 1;
+        }
 
-Text Block:
-Label Padega India — A Healthara Awareness Initiative
-“Every label tells a story—most of it hidden. Decode ingredients, not marketing.”
+        .next-button:hover {
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+        }
 
-Small glowing line underneath:
-#KnowYourLabel #HealtharaReveals
+        .next-button::after {
+            content: '>';
+            color: #0B0016;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .banner {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(11, 0, 22, 0.9), rgba(30, 0, 50, 0.9));
+            border: 1px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 12px;
+            padding: 1px;
+            background: linear-gradient(135deg, #FF00CC, #00FFFF);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            z-index: -1;
+        }
+
+        .banner-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #FF00CC, #00FFFF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .banner-text {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .banner-hashtags {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 10px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .banner-hashtags::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, #FF00CC, #00FFFF);
+        }
+
+        @media (max-width: 440px) {
+            .card-wrapper {
+                width: 100%;
+                max-width: 400px;
+            }
+            
+            .deck-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="deck-title">THE LABEL TRAP</h1>
+    
+    <div class="cards-container">
+        <!-- Card 1 -->
+        <div class="card-wrapper">
+            <div class="card" id="card1">
+                <div class="card-face card-front">
+                    <div class="select-button" onclick="toggleSelect(event, this)"></div>
+                    <div class="card-content">
+                        <p class="question">"How much spinach do you think is actually in a pack of 'Spinach Noodles'?"</p>
+                    </div>
+                </div>
+                <div class="card-face card-back">
+                    <div class="card-content">
+                        <p class="answer">"Less than 1.5 percent. Most of the color comes from synthetic or dehydrated extract, not real spinach."</p>
+                        <p class="explanation">"Marketing uses the green label trick—tiny ingredient, big claim."</p>
+                    </div>
+                    <div class="next-button" onclick="scrollToNext()"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card 2 -->
+        <div class="card-wrapper">
+            <div class="card" id="card2">
+                <div class="card-face card-front">
+                    <div class="select-button" onclick="toggleSelect(event, this)"></div>
+                    <div class="card-content">
+                        <p class="question">"Do you think your favorite tomato ketchup is packed with real tomatoes?"</p>
+                    </div>
+                </div>
+                <div class="card-face card-back">
+                    <div class="card-content">
+                        <p class="answer">"Barely. Many commercial ketchups use under 25 percent tomato paste plus sugar, starch, and preservatives."</p>
+                        <p class="explanation">"That thick texture? It's often corn syrup, not tomato pulp."</p>
+                    </div>
+                    <div class="next-button" onclick="scrollToNext()"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card 3 -->
+        <div class="card-wrapper">
+            <div class="card" id="card3">
+                <div class="card-face card-front">
+                    <div class="select-button" onclick="toggleSelect(event, this)"></div>
+                    <div class="card-content">
+                        <p class="question">"If real fruit juice needs double the fruit to make one glass, how are '100% Real Juices' sold cheaper than fruit?"</p>
+                    </div>
+                </div>
+                <div class="card-face card-back">
+                    <div class="card-content">
+                        <p class="answer">"They're mostly reconstituted from fruit concentrate, sugar, and flavoring—not fresh fruit."</p>
+                        <p class="explanation">"Concentrates travel cheap. Real fruit doesn't."</p>
+                    </div>
+                    <div class="next-button" onclick="scrollToNext()"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Banner Section -->
+    <div class="banner">
+        <h2 class="banner-title">Label Padega India — A Healthara Awareness Initiative</h2>
+        <p class="banner-text">"Every label tells a story—most of it hidden. Decode ingredients, not marketing."</p>
+        <p class="banner-hashtags">#KnowYourLabel #HealtharaReveals</p>
+    </div>
+
+    <script>
+        // Card flip functionality
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                // Don't flip if clicking on select button or next button
+                if (e.target.classList.contains('select-button') || 
+                    e.target.classList.contains('next-button') ||
+                    e.target.parentElement.classList.contains('next-button')) {
+                    return;
+                }
+                
+                this.classList.toggle('flipped');
+            });
+        });
+
+        // Toggle select button
+        function toggleSelect(event, button) {
+            event.stopPropagation();
+            button.classList.toggle('selected');
+        }
+
+        // Scroll to next card
+        function scrollToNext() {
+            const currentCard = event.target.closest('.card-wrapper');
+            const nextCard = currentCard.nextElementSibling;
+            
+            if (nextCard) {
+                nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                // If there's no next card, scroll to the banner
+                document.querySelector('.banner').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    </script>
+</body>
+</html>
